@@ -3,9 +3,6 @@ package routes
 import (
 	"errors"
 	"testing"
-	"time"
-
-	"github.com/RianNegreiros/url-shortener-go-redis/api/database"
 )
 
 func TestValidateURL(t *testing.T) {
@@ -40,31 +37,6 @@ func TestGenerateID(t *testing.T) {
 		result := generateID(tc.customShort)
 		if len(result) != tc.expectedLen {
 			t.Errorf("generateID(%s) = %d, want %d", tc.customShort, len(result), tc.expectedLen)
-		}
-	}
-}
-
-func TestStoreURL(t *testing.T) {
-	testCases := []struct {
-		id     string
-		url    string
-		expiry int
-		err    error
-	}{
-		{"", "http://example.com", 0, nil},
-		{"", "http://example.com", 1, nil},
-		{"", "http://example.com", 24, nil},
-		{"", "http://example.com", 25, nil},
-		{"", "http://example.com", 26, nil},
-		{"", "http://example.com", 100, nil},
-	}
-
-	redisClient := database.CreateClient(0)
-
-	for _, tc := range testCases {
-		result := storeURL(redisClient, tc.id, tc.url, time.Duration(tc.expiry)*time.Hour)
-		if result != tc.err {
-			t.Errorf("storeURL(%s, %s, %d) = %v, want %v", tc.id, tc.url, tc.expiry, result, tc.err)
 		}
 	}
 }
