@@ -44,3 +44,4 @@ sudo sysctl -w vm.overcommit_memory=1
 ## API Documentation
 
 Explore the API using the Postman Collection: [Link to Postman Collection](_docs/URL%20Shortener.postman_collection.json)
+Explore the API using the Insomnia Collection: [Link to Insomnia Collection](_docs/Insomnia_2023-11-13.json)
