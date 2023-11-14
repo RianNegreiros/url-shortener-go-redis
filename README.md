@@ -6,12 +6,13 @@ Challenge from [backend brasil](https://github.com/backend-br/desafios)
 
 ![Application overview](./_docs/app-overview.png)
 
-## Libraies and Tools
+## Libraries and Tools
 
 - [Go](https://go.dev/doc/install)
 - [Fiber](https://gofiber.io)
 - [Redis](https://redis.io/docs/about)
 - [UUID](https://github.com/google/uuid)
+- [GoDotEnv](https://github.com/joho/godotenv)
 
 ## How to run
 
@@ -31,13 +32,13 @@ cp .env.example .env
 docker compose up
 ```
 
-On WSL, you probably come across this warning:
+On WSL, you can probably come across this warning:
 
 ```bash
  WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
 ```
 
-To temporary fix you can run:
+To temporary(until the system restart) fix you can run:
 
 ```bash
 sudo sysctl -w vm.overcommit_memory=1
