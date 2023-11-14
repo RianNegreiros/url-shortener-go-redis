@@ -6,6 +6,10 @@ name: Go
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
+      - '.env.example'
+      - '_docs/**'
   pull_request:
     branches: [ "main" ]
 
