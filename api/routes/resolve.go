@@ -6,30 +6,59 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// ResolveURL ...
+// ResolveURL handles the resolution of short URLs
 func ResolveURL(c *fiber.Ctx) error {
-	// get the short from the url
-	url := c.Params("url")
-	// query the db to find the original URL, if a match is found
-	// increment the redirect counter and redirect to the original URL
-	// else return error message
-	r := database.CreateClient(0)
-	defer r.Close()
+	shortURL := c.Params("url")
 
-	value, err := r.Get(database.Ctx, url).Result()
+	// Query the database to find the original URL
+	originalURL, err := getOriginalURL(c, shortURL)
+	if err != nil {
+		return err
+	}
+
+	// If the original URL is empty, return a status of NotFound
+	if originalURL == "" {
+		return c.Status(fiber.StatusNotFound).SendString("Short URL not found")
+	}
+
+	// Increment the redirect counter
+	err = incrementRedirectCounter(c)
+	if err != nil {
+		return err
+	}
+
+	// Redirect to the original URL
+	return c.Redirect(originalURL, fiber.StatusMovedPermanently)
+}
+
+func getOriginalURL(c *fiber.Ctx, shortURL string) (string, error) {
+	dbClient := database.CreateClient(0)
+	defer dbClient.Close()
+
+	value, err := dbClient.Get(database.Ctx, shortURL).Result()
 	if err == redis.Nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "short not found on database",
+		return "", c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Short URL not found in the database",
 		})
 	} else if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "cannot connect to DB",
+		return "", c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Unable to connect to the database",
 		})
 	}
-	// increment the counter
-	rInr := database.CreateClient(1)
-	defer rInr.Close()
-	_ = rInr.Incr(database.Ctx, "counter")
-	// redirect to original URL
-	return c.Redirect(value, 301)
+
+	return value, nil
+}
+
+func incrementRedirectCounter(c *fiber.Ctx) error {
+	counterClient := database.CreateClient(1)
+	defer counterClient.Close()
+
+	err := counterClient.Incr(database.Ctx, "counter").Err()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Unable to increment the redirect counter",
+		})
+	}
+
+	return nil
 }
