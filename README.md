@@ -4,6 +4,8 @@ Service that allows you to shorten long URLs to make them more compact and easie
 
 Challenge from [backend brasil](https://github.com/backend-br/desafios)
 
+![Application overview](./_docs/app-overview.png)
+
 ## Libraies and Tools
 
 - [Go](https://go.dev/doc/install)
